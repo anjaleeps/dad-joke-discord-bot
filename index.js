@@ -1,5 +1,4 @@
 require("dotenv").config();
-const config = require("./config.json");
 const axios = require("axios");
 const Discord = require("discord.js");
 const client = new Discord.Client();
@@ -68,7 +67,7 @@ client.on("message", async (message) => {
         if (!result) {
             result = await getRandomDadJoke();
         }
-        
+
         message.reply(result.joke);
     }
     catch (error) {
