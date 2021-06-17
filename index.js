@@ -12,10 +12,7 @@ async function getRandomDadJoke() {
 }
 
 async function searchDadJokes(term) {
-    const params = {
-        term: term,
-        limit: 1
-    }
+    const params = { term: term, limit: 1 }
 
     const response = await axios.get(`${dadJokeURL}/search`, { params: params, headers: headers });
     return response.data.results[0];
@@ -30,10 +27,7 @@ client.on("guildMemberAdd", member => {
     const channel = member.guild.channels.cache.find(ch => ch.name === "general");
 
     //If the channel is not in the server, exit
-    if (!channel) {
-        console.log(channel);
-        return;
-    };
+    if (!channel) return;
 
     channel.send(`Welcome, ${member}! I'm at your service if you want to hear dad jokes`);
 })
@@ -43,23 +37,25 @@ client.on("message", async (message) => {
     //"Ignore the message if the bot authored it"
     if (message.author.bot) return;
 
+    const text = message.content.toLowerCase();
 
-    //Check if the user message has the phrase "dad joke"
-    const text = message.content.toLocaleLowerCase();
-    if (!text.includes("dad joke")) return;
+    //If the doesn't specifically mention, bot return
+    if (text.includes("@here") || text.includes("@everyone")) return;
 
     let result;
 
     try {
-        //If a user has asked a dad joke about something specific
-        const parts = text.split("about");
-        if (parts.length > 1) {
-            //Get the search term
-            const term = parts[parts.length - 1].trim();
+        //Return if the message doesn't mention the bot
+        if (!message.mentions.has(client.user.id)) return;
+
+        const term = text.replace(/<@!\d+>/, "").trim();
+
+        //If there is a search term
+        if (term !== "") {
             //Search a joke containing the term
             result = await searchDadJokes(term);
             if (!result) {
-                message.reply(`Sorry, got no dad jokes about ${term}. But how about a random joke?`);
+                message.reply(`Sorry, got no dad jokes about ${term}. But how about a random dad joke?`);
             }
         }
 
